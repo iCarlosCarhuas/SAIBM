@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Libro</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-5">
+        <h2 th:text="${libro.id == null} ? 'Nuevo Libro' : 'Editar Libro'"></h2>
+
+        <form th:action="@{/biblioteca/guardar}" th:object="${libro}" method="post" id="formLibro">
+            <input type="hidden" th:field="*{id}" required/>
+
+            <div class="mb-3">
+                <label for="nombreLibro" class="form-label">Nombre de Libro</label>
+                <input type="text" th:field="*{nombreLibro}" class="form-control" id="nombreLibro" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <input type="text" th:field="*{descripcion}" class="form-control" id="descripcion" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="stock" class="form-label">Stock</label>
+                <input type="number" th:field="*{stock}" class="form-control" id="stock" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="autor" class="form-label">Autor</label>
+                <input type="text" th:field="*{autor}" class="form-control" id="autor" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="imagen" class="form-label">URL de Imagen</label>
+                <input type="url" th:field="*{imagen}" class="form-control" id="imagen" required/>
+            </div>
+
+            <button type="submit" th:text="${libro.id == null} ? 'Registrar' : 'Actualizar'"
+                    class="btn" th:classappend="${libro.id == null} ? 'btn-outline-primary' : 'btn-outline-success'"></button>
+        </form>
+
+        <a th:href="@{/biblioteca/listar_libros}" class="btn btn-primary mt-3">Volver al catálogo de libros</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#formLibro').validate({
+            rules: {
+                nombreLibro: "required",
+                descripcion: "required",
+                stock: {
+                    required: true,
+                    number: true
+                },
+                autor: "required",
+                imagen: {
+                    required: true,
+                    url: true
+                }
+            },
+            messages: {
+                nombreLibro: "Por favor ingresa el nombre del libro",
+                descripcion: "Por favor ingresa la descripción",
+                stock: {
+                    required: "El stock es requerido",
+                    number: "Debe ser un número válido"
+                },
+                autor: "Por favor ingresa el autor",
+                imagen: {
+                    required: "La URL de la imagen es requerida",
+                    url: "Por favor ingresa una URL válida"
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

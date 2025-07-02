@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Usuario</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container py-5">
+        <h2 th:text="${usuario.id == null} ? 'Nuevo Usuario' : 'Editar Usuario'"></h2>
+
+        <form th:action="@{/usuario/guardar}" th:object="${usuario}" method="post" id="formUsuario">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" th:field="*{nombre}" class="form-control" id="nombre" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="apellido" class="form-label">Apellido</label>
+                <input type="text" th:field="*{apellido}" class="form-control" id="apellido" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="dni" class="form-label">DNI</label>
+                <input type="text" th:field="*{dni}" class="form-control" id="dni" minlength="8" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="correo" class="form-label">Correo</label>
+                <input type="email" th:field="*{correo}" class="form-control" id="correo" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="contraseña" class="form-label">Contraseña</label>
+                <input type="password" th:field="*{contraseña}" class="form-control" id="contraseña" minlength="6" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="rol" class="form-label">Rol</label>
+                <select th:field="*{rol.id}" class="form-select" id="rol" required>
+                    <option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombreRol}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="membresia" class="form-label">Membresía</label>
+                <select th:field="*{membresia.id}" class="form-select" id="membresia" required>
+                    <option th:each="membresia : ${membresias}" th:value="${membresia.id}" th:text="${membresia.nombreMembresia}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="perfil" class="form-label">Perfil</label>
+                <select th:field="*{perfil.id}" class="form-select" id="perfil" required>
+                    <option th:each="perfil : ${perfiles}" th:value="${perfil.id}" th:text="${perfil.nombre}"></option>
+                </select>
+            </div>
+
+            <button type="submit" th:text="${usuario.id == null} ? 'Registrar' : 'Actualizar'"
+                    class="btn"
+                    th:classappend="${usuario.id == null} ? 'btn-outline-primary' : 'btn-outline-success'"></button>
+        </form>
+
+        <a th:href="@{/usuario/listar_usuarios}" class="btn btn-primary mt-3">Volver a la lista de usuarios</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#formUsuario').validate({
+            rules: {
+                nombre: "required",
+                apellido: "required",
+                dni: {
+                    required: true,
+                    minlength: 8
+                },
+                correo: {
+                    required: true,
+                    email: true
+                },
+                contraseña: {
+                    required: true,
+                    minlength: 6
+                },
+                rol: "required",
+                membresia: "required",
+                perfil: "required"
+            },
+            messages: {
+                nombre: "Por favor ingresa el nombre",
+                apellido: "Por favor ingresa el apellido",
+                dni: {
+                    required: "El DNI es requerido",
+                    minlength: "El DNI debe tener al menos 8 caracteres"
+                },
+                correo: {
+                    required: "El correo es requerido",
+                    email: "Por favor ingresa un correo válido"
+                },
+                contraseña: {
+                    required: "La contraseña es requerida",
+                    minlength: "Debe tener al menos 6 caracteres"
+                },
+                rol: "Selecciona un rol",
+                membresia: "Selecciona una membresía",
+                perfil: "Selecciona un perfil"
+            }
+        });
+    });
+</script>
+</body>
+</html>

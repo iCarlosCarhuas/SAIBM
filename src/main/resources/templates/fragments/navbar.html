@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary" th:fragment="navbar">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">SuperLibro</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <!-- MENU PRINCIPAL -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <!-- Mostrar Membresía para usuarios no admin -->
+                <li class="nav-item" th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol != 'ROLE_ADMIN'}">
+                    <a class="nav-link text-capitalize" href="#">
+                        Membresía:
+                        <b th:text="${session.usuarioLogueado.membresia.nombreMembresia}"></b>
+                    </a>
+                </li>
+
+                <!-- Menu Usuarios para admin -->
+                <li class="nav-item"
+                    th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol == 'ROLE_ADMIN'}">
+                    <a class="nav-link" th:href="@{/usuario/listar_usuarios}">
+                        Usuarios
+                    </a>
+                </li>
+
+                <!-- Menu Biblioteca para usuarios -->
+                <li class="nav-item"
+                    th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol != 'ROLE_ADMIN'}">
+                    <a class="nav-link" th:href="@{/biblioteca/listar_libros}">
+                        Biblioteca
+                    </a>
+                </li>
+
+                <!-- Menu Libros para admin -->
+                <li class="nav-item"
+                    th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol == 'ROLE_ADMIN'}">
+                    <a class="nav-link" th:href="@{/biblioteca/listar_libros}">
+                        Libros
+                    </a>
+                </li>
+
+            </ul>
+
+            <!-- DERECHA -->
+            <div class="d-flex">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <!-- Saludo -->
+                    <li th:if="${session.usuarioLogueado != null}">
+                        <a class="nav-link" href="#">
+                            Hola!, <span th:text="${session.usuarioLogueado.nombre}"></span>
+                        </a>
+                    </li>
+
+                    <!-- Reservas Temporales usuarios -->
+                    <li class="nav-item"
+                        th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol != 'ROLE_ADMIN'}">
+                        <a class="nav-link rounded-pill border border-dark p-2 position-relative"
+                           th:href="@{/reserva/mis_reservas}"
+                           style="width: fit-content">
+                            <i class="bi bi-bookshelf m-1"></i>
+                            Por Reservar
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                  th:text="${carritoReservas.size()}">0</span>
+
+                        </a>
+                    </li>
+                    <!-- Reservas Confirmadas usuarios -->
+                    <li class="nav-item"
+                        th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol != 'ROLE_ADMIN'}">
+                        <a class="nav-link rounded-pill border border-dark p-2 position-relative"
+                           th:href="@{/reserva/mis_reservas}"
+                           style="width: fit-content">
+                            <i class="bi bi-bookshelf m-1"></i>
+                            Reservados
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" th:text="${countReservas}">0</span>
+
+                        </a>
+                    </li>
+
+                    <!-- Logout -->
+                    <li class="nav-item" th:if="${session.usuarioLogueado != null}">
+                        <a class="nav-link" th:href="@{/security/logout}">Cerrar Sesión</a>
+                    </li>
+
+                    <!-- Login / Registro -->
+                    <li class="nav-item" th:if="${session.usuarioLogueado == null}">
+                        <a class="nav-link" th:href="@{/security/login}">Iniciar sesión</a>
+                    </li>
+                    <li class="nav-item" th:if="${session.usuarioLogueado == null}">
+                        <a class="nav-link" th:href="@{/security/registro}">Registrarse</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>

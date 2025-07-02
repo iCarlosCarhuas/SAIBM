@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <meta charset="UTF-8">
+    <title>SAIBM | Registro</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div class="container py-5" style="max-width: 500px;">
+        <h2 class="text-center mb-4">Regístrate</h2>
+
+        <form th:action="@{/security/register}" th:object="${usuario}" method="post">
+
+            <div class="mb-3">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text" th:field="*{nombre}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="apellido">Apellido</label>
+                <input id="apellido" type="text" th:field="*{apellido}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="dni">DNI</label>
+                <input id="dni" type="text" th:field="*{dni}" class="form-control" required minlength="8">
+            </div>
+
+            <div class="mb-3">
+                <label for="correo">Correo</label>
+                <input id="correo" type="email" th:field="*{correo}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="contraseña">Contraseña</label>
+                <input id="contraseña" type="password" th:field="*{contraseña}" class="form-control" required minlength="6">
+            </div>
+
+            <div class="mb-3">
+                <label for="membresia">Membresía</label>
+                <select id="membresia" name="membresia" class="form-select" required>
+                    <option th:each="m : ${membresias}" th:value="${m.id}" th:text="${m.nombreMembresia}"></option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Registrar</button>
+        </form>
+
+    </div>
+
+</div>
+</body>
+</html>

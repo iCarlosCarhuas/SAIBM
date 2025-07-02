@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Reservas</title>
+</head>
+<body>
+<div layout:fragment="content" class="container">
+    <h2>Mis Reservas</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Libro</th>
+            <th>Fecha Reserva</th>
+            <th>Fecha Expiración</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reserva : ${reservas}">
+            <td th:text="${reserva.id}">1</td>
+            <td th:text="${reserva.libro.nombreLibro}">dsadsadsa</td>
+            <td th:text="${reserva.fechaReserva}">2025-06-28</td>
+            <td th:text="${reserva.fechaExpiracion}">2025-08-28</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(reservas)}">
+            <td colspan="4" class="text-center">No tienes reservas registradas.</td>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+</body>
+</html>

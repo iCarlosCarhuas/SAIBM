@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">SAIBM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/fortawesome__fontawesome-free/6.7.2/css/all.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/admin-lte/4.0.0-beta3/dist/css/adminlte.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/overlayscrollbars/2.11.4/styles/overlayscrollbars.min.css}" />
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div class="app-wrapper">
+    <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+            <main layout:fragment="content">
+                <p>Contenido Teplate</p>
+            </main>
+        </div>
+    </main>
+
+</div>
+<footer  th:replace="~{fragments/footer :: footer}"></footer>
+
+<script  th:src="@{/webjars/admin-lte/4.0.0-beta3/dist/js/adminlte.min.js}"></script>
+<script  th:src="@{/webjars/bootstrap/5.3.7/dist/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
