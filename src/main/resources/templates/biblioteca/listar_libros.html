@@ -16,6 +16,14 @@
 
         <div th:if="${error}" class="alert alert-danger text-center" th:text="${error}"></div>
 
+        <div>
+            <form th:action="@{/biblioteca/listar_libros}" method="get">
+            <input type="text" name="nombre" class="form-control" placeholder="Buscar libro...">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+        </div>
+
+
         <div th:if="${usuario != null and usuario.rol != null and usuario.rol.nombreRol == 'ROLE_ADMIN'}">
         <a th:href="@{/biblioteca/nuevo}" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Crear Libro
@@ -25,8 +33,11 @@
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <div th:if="${libros != null and libros.empty}">
                 <div class="alert alert-info text-center w-100">No hay libros disponibles por el momento.</div>
+                <a th:href="@{/biblioteca/listar_libros}" class="btn btn-primary mt-3">
+                     Regresar
+                </a>
             </div>
-            <div th:if="${error}" class="alert alert-danger text-center" th:text="${error}"></div>
+           <!-- <div th:if="${error}" class="alert alert-danger text-center" th:text="${error}"></div> por card-->
             <div th:each="libro : ${libros}" class="col">
                 <div class="card h-100 border-primary shadow">
                     <div class="ratio ratio-1x1">
@@ -84,6 +95,13 @@
 
                 </div>
         </div>
+            <!-- Botón para generar PDF de todos los libros -->
+            <div class="text-end mt-4" th:if="${usuario != null and usuario.rol != null and usuario.rol.nombreRol == 'ROLE_ADMIN'}">
+                <a th:href="@{/generar/reporteLibros}"
+                   class="btn btn-primary">
+                    <i class="bi bi-file-earmark-pdf"></i> Generar PDF de todos los libros
+                </a>
+            </div>
 
         <div th:if="${carritoReservas.size() > 0}" class="mt-4 text-end">
             <form th:action="@{/reserva/confirmar}" method="post">

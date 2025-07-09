@@ -12,4 +12,8 @@ public interface ReservaService {
     List<Integer> conseguirIdsReservadosPorUsuario(Integer usuarioId);
 
     List<ReservaEntity> conseguirPorUsuario(Integer usuarioId);
+
+    List<ReservaEntity> conseguirReserva();
+
+    void eliminar(Integer id);
 }

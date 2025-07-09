@@ -121,6 +121,22 @@ public class ReservaController {
         return "biblioteca/listar_reservas";
     }
 
+    @GetMapping("/mantener_reservas")
+    public String mantenerReservas(Model model) {
+        model.addAttribute("reservas", reservaService.conseguirReserva());
+        return "/reserva/mantener_reservas";
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarReserva(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            reservaService.eliminar(id);
+            redirectAttributes.addFlashAttribute("success", "Reserva eliminada correctamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/reserva/mantener_reservas";
+    }
 
 
 }

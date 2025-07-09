@@ -49,6 +49,14 @@
                     </a>
                 </li>
 
+                <!-- Menu Reservas para admin -->
+                <li class="nav-item"
+                    th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol == 'ROLE_ADMIN'}">
+                    <a class="nav-link" th:href="@{/reserva/mantener_reservas}">
+                        Reservas
+                    </a>
+                </li>
+
             </ul>
 
             <!-- DERECHA -->
@@ -62,20 +70,8 @@
                         </a>
                     </li>
 
-                    <!-- Reservas Temporales usuarios -->
-                    <li class="nav-item"
-                        th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol != 'ROLE_ADMIN'}">
-                        <a class="nav-link rounded-pill border border-dark p-2 position-relative"
-                           th:href="@{/reserva/mis_reservas}"
-                           style="width: fit-content">
-                            <i class="bi bi-bookshelf m-1"></i>
-                            Por Reservar
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                  th:text="${carritoReservas.size()}">0</span>
 
-                        </a>
-                    </li>
-                    <!-- Reservas Confirmadas usuarios -->
+                    <!-- Menu Reservas Confirmadas para usuarios -->
                     <li class="nav-item"
                         th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol != 'ROLE_ADMIN'}">
                         <a class="nav-link rounded-pill border border-dark p-2 position-relative"

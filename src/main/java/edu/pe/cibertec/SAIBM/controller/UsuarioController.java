@@ -32,10 +32,16 @@ public class UsuarioController {
     private PerfilService perfilService;
 
     @GetMapping("/listar_usuarios")
-    public String listarUsuarios(Model model) {
-        model.addAttribute("usuarios", usuarioService.conseguirTodo());
+    public String listarUsuarios(@RequestParam(name = "nombre", required = false) String nombre, Model model) {
+        if (nombre != null && !nombre.isEmpty()) {
+            model.addAttribute("usuarios", usuarioService.buscarPorNombre(nombre));
+        } else {
+            model.addAttribute("usuarios", usuarioService.conseguirTodo());
+        }
         return "usuario/listar_usuarios";
     }
+
+
 
     @GetMapping("/nuevo")
     public String mostrarFormularioRegistro(Model model) {

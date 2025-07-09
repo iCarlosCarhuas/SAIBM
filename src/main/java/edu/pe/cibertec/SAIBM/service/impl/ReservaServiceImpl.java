@@ -25,6 +25,7 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Override
     public boolean existeReserva(Integer libroId, Integer usuarioId) {
+        //acceso a BD para saber si existen reservas
         return reservaRepository.existsByLibroIdAndUsuarioId(libroId, usuarioId);
     }
 
@@ -32,6 +33,8 @@ public class ReservaServiceImpl implements ReservaService {
     public int contarReservasPorUsuario(Integer usuarioId) {
         return reservaRepository.countByUsuarioId(usuarioId);
     }
+
+    @Transactional
     @Override
     public void confirmarReserva(ReservaEntity reserva) {
         Integer usuarioId = reserva.getUsuario().getId();
@@ -87,6 +90,16 @@ public class ReservaServiceImpl implements ReservaService {
                 .stream()
                 .map(r -> r.getLibro().getId())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReservaEntity> conseguirReserva() {
+        return reservaRepository.findAll();
+    }
+
+    @Override
+    public void eliminar(Integer id) {
+        reservaRepository.deleteById(id);
     }
 
 }

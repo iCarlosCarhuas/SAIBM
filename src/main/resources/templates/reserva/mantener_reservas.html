@@ -8,7 +8,7 @@
 </head>
 <body>
 <div layout:fragment="content" class="container">
-    <h2 class="mt-4 mb-4">Mis Reservas</h2>
+    <h2 class="mt-4 mb-4">Mantener Reservas</h2>
 
     <!-- Tabla de reservas -->
     <table class="table table-striped">
@@ -17,7 +17,9 @@
             <th>ID Reserva</th>
             <th>Nombre Libro</th>
             <th>Fecha Reserva</th>
-            <th>Fecha Expiración</th>
+            <th>Fecha Expiracion</th>
+            <th>Nombre Usuario</th>
+            <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -26,20 +28,23 @@
             <td th:text="${reserva.libro.nombreLibro}">Ejemplo Libro</td>
             <td th:text="${reserva.fechaReserva}">2025-06-28</td>
             <td th:text="${reserva.fechaExpiracion}">2025-08-28</td>
+            <td th:text="${reserva.usuario.nombre}">Pablito</td>
+            <td>
+                <div th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol == 'ROLE_ADMIN'}">
+                    <!-- POSTMapping -->
+                    <form th:action="@{/reserva/eliminar/{id}(id=${reserva.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar reserva?')">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
+            </td>
         </tr>
         <tr th:if="${#lists.isEmpty(reservas)}">
-            <td colspan="4" class="text-center">No tienes reservas registradas.</td>
+            <td colspan="6" class="text-center">No tienes reservas por mantener.</td>
         </tr>
         </tbody>
     </table>
-
-    <!-- Botón para generar PDF -->
-    <div class="text-end mt-4">
-        <a th:href="@{'/generar/pdf/' + ${session.usuarioLogueado.id}}"
-           class="btn btn-primary">
-            <i class="bi bi-file-earmark-pdf"></i> Generar PDF de mis reservas
-        </a>
-    </div>
 
 </div>
 </body>

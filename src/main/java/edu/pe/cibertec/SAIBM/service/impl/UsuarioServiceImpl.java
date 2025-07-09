@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +22,12 @@ public class UsuarioServiceImpl extends GenericServiceImpl<UsuarioEntity, Intege
     private void init() {
         super.repository = usuarioRepository;
     }
+
+    @Override
+    public List<UsuarioEntity> buscarPorNombre(String nombre) {
+        return usuarioRepository.findByNombre(nombre);
+    }
+
 
     @Override
     public Optional<UsuarioEntity> encontrarPorCorreo(String correo) {

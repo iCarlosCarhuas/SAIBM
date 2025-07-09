@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Reserva</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container py-5">
+    <h2> Editar Libro </h2>
+
+    <form th:action="@{/reserva/guardar}" th:object="${reserva}" method="post" id="formReserva">
+      <input type="hidden" th:field="*{id}" required/>
+
+      <div class="mb-3">
+        <label for="nombreLibro" class="form-label">Nombre de Libro</label>
+        <input type="text" th:field="*{nombreLibro}" class="form-control" id="nombreLibro" disabled/>
+      </div>
+
+      <div class="mb-3">
+        <label for="fecha_reserva" class="form-label">Fecha Reserva</label>
+        <input type="text" th:field="*{fecha_reserva}" class="form-control" id="fecha_reserva"/>
+      </div>
+      <div class="mb-3">
+        <label for="fecha_expiracion" class="form-label">Fecha Expiracion</label>
+        <input type="text" th:field="*{fecha_expiracion}" class="form-control" id="fecha_expiracion"/>
+      </div>
+      <div class="mb-3">
+        <label for="usuario" class="form-label">Nombre de Usuario</label>
+        <input type="text" th:field="*{usuario.nombre}" class="form-control" id="autor" disabled/>
+      </div>
+
+
+      <button type="submit" th:text="${libro.id == null} ? 'Registrar' : 'Actualizar'"
+              class="btn" th:classappend="${libro.id == null} ? 'btn-outline-primary' : 'btn-outline-success'"></button>
+    </form>
+
+    <a th:href="@{/reserva/mantener_reservas}" class="btn btn-primary mt-3">Volver al catálogo de Reservas</a>
+  </div>
+</div>
+</body>
+</html>

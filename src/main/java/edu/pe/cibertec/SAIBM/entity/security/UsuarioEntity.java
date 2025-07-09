@@ -1,6 +1,7 @@
 package edu.pe.cibertec.SAIBM.entity.security;
 
 import edu.pe.cibertec.SAIBM.entity.MembresiaEntity;
+import edu.pe.cibertec.SAIBM.service.UsuarioService;
 import jakarta.persistence.*;
 import lombok.Data;
 @Data
@@ -40,5 +41,6 @@ public class UsuarioEntity {
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "perfil_id")
         private PerfilEntity perfil;
+
 
 }
