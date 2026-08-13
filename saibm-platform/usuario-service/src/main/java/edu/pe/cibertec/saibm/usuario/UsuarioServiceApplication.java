@@ -1,0 +1,2 @@
+package edu.pe.cibertec.saibm.usuario; import org.springframework.boot.SpringApplication; import org.springframework.boot.autoconfigure.SpringBootApplication; import org.springframework.boot.context.properties.EnableConfigurationProperties; import edu.pe.cibertec.saibm.usuario.infrastructure.migration.UserBackfillConfiguration;
+@SpringBootApplication @EnableConfigurationProperties(UserBackfillConfiguration.class) public class UsuarioServiceApplication { public static void main(String[] args){SpringApplication.run(UsuarioServiceApplication.class,args);} }

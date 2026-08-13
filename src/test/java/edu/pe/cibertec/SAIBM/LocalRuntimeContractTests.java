@@ -17,7 +17,7 @@ class LocalRuntimeContractTests {
 	@Test
 	void databasesStayPrivateAndInfrastructureIsHealthChecked() throws IOException {
 		String compose = Files.readString(ROOT.resolve("compose.yaml"));
-		for (String service : new String[] { "iam-db", "catalog-db", "libro-db", "inventario-db", "membresia-db", "circulation-db", "reporting-db" }) {
+		for (String service : new String[] { "iam-db", "catalog-db", "libro-db", "inventario-db", "membresia-db", "usuario-db", "circulation-db", "reporting-db" }) {
 			String block = serviceBlock(compose, service);
 			assertThat(block).contains("POSTGRES_DB: ${SAIBM_", "POSTGRES_USER: ${SAIBM_",
 					"POSTGRES_PASSWORD: ${SAIBM_").doesNotContain("ports:");
@@ -26,6 +26,7 @@ class LocalRuntimeContractTests {
 				"services: {internal: true}", "data: {internal: true}");
 		assertThat(serviceBlock(compose, "inventario-service")).contains("healthcheck:", "rabbitmq", "inventario-db");
 		assertThat(serviceBlock(compose, "membresia-service")).contains("healthcheck:", "rabbitmq", "membresia-db");
+		assertThat(serviceBlock(compose, "usuario-service")).contains("healthcheck:", "rabbitmq", "usuario-db");
 	}
 
 	@Test
@@ -41,11 +42,12 @@ class LocalRuntimeContractTests {
 	}
 
 	@Test
-	void everyPlatformDockerBuildIncludesTheMembershipReactorDescriptor() throws IOException {
+	void everyPlatformDockerBuildIncludesAllRegisteredReactorDescriptors() throws IOException {
 		for (String service : new String[] { "discovery-server", "api-gateway", "catalog-service", "libro-service",
-				"inventario-service", "membresia-service" }) {
+				"inventario-service", "membresia-service", "usuario-service" }) {
 			String dockerfile = Files.readString(ROOT.resolve("saibm-platform").resolve(service).resolve("Dockerfile"));
-			assertThat(dockerfile).contains("membresia-service/pom.xml membresia-service/pom.xml");
+			assertThat(dockerfile).contains("membresia-service/pom.xml membresia-service/pom.xml",
+					"usuario-service/pom.xml usuario-service/pom.xml");
 		}
 	}
 

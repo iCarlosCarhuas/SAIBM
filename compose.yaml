@@ -55,6 +55,15 @@ services:
       POSTGRES_PASSWORD: ${SAIBM_MEMBRESIA_DB_PASSWORD}
     volumes: [membresia-data:/var/lib/postgresql/data]
 
+  usuario-db:
+    <<: *postgres
+    networks: [usuario-data]
+    environment:
+      POSTGRES_DB: ${SAIBM_USUARIO_DB_NAME}
+      POSTGRES_USER: ${SAIBM_USUARIO_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_USUARIO_DB_PASSWORD}
+    volumes: [usuario-data:/var/lib/postgresql/data]
+
   libro-service:
     build:
       context: saibm-platform
@@ -124,6 +133,33 @@ services:
     networks: [services, membresia-data]
     healthcheck:
       test: [CMD, wget, -q, --spider, http://localhost:8087/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  usuario-service:
+    build:
+      context: saibm-platform
+      dockerfile: usuario-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SAIBM_USUARIO_DB_URL: jdbc:postgresql://usuario-db:5432/${SAIBM_USUARIO_DB_NAME}
+      SAIBM_USUARIO_DB_USER: ${SAIBM_USUARIO_DB_USER}
+      SAIBM_USUARIO_DB_PASSWORD: ${SAIBM_USUARIO_DB_PASSWORD}
+      SAIBM_USUARIO_INTERNAL_ADMIN_SECRET: ${SAIBM_USUARIO_INTERNAL_ADMIN_SECRET:-}
+      SAIBM_RABBITMQ_HOST: rabbitmq
+      SAIBM_RABBITMQ_PORT: 5672
+      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER}
+      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD}
+      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST}
+    depends_on:
+      usuario-db: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      discovery-server: {condition: service_healthy}
+    networks: [services, usuario-data]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:8088/actuator/health/readiness]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -210,6 +246,7 @@ services:
       libro-service: {condition: service_healthy}
       inventario-service: {condition: service_healthy}
       membresia-service: {condition: service_healthy}
+      usuario-service: {condition: service_healthy}
     ports: ["127.0.0.1:8080:8080"]
     networks: [edge, services]
     extra_hosts: ["host.docker.internal:host-gateway"]
@@ -227,6 +264,7 @@ networks:
   libro-data: {internal: true}
   inventario-data: {internal: true}
   membresia-data: {internal: true}
+  usuario-data: {internal: true}
 
 volumes:
   iam-data: {}
@@ -234,6 +272,7 @@ volumes:
   libro-data: {}
   inventario-data: {}
   membresia-data: {}
+  usuario-data: {}
   circulation-data: {}
   reporting-data: {}
   rabbitmq-data: {}

@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.usuario.infrastructure.migration; import org.springframework.boot.context.properties.ConfigurationProperties; @ConfigurationProperties("usuario.backfill") public record UserBackfillConfiguration(boolean enabled){}

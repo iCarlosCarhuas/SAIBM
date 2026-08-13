@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.usuario.domain.event; import java.time.Instant; import java.util.UUID; public record UserEvent(UUID eventId,String eventType,UUID userId,Instant occurredAt,String correlationId,String producer){ }

@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.usuario.domain.event; public final class UserEventType {private UserEventType(){}public static final String CREATED="UserProfileCreated.v1",CHANGED="UserProfileChanged.v1",DEACTIVATED="UserDeactivated.v1",REACTIVATED="UserReactivated.v1";}

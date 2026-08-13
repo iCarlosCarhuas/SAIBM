@@ -25,6 +25,7 @@
 		<module>libro-service</module>
 		<module>inventario-service</module>
 		<module>membresia-service</module>
+		<module>usuario-service</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>

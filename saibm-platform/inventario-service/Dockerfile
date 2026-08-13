@@ -7,6 +7,7 @@ COPY catalog-service/pom.xml catalog-service/pom.xml
 COPY libro-service/pom.xml libro-service/pom.xml
 COPY inventario-service/pom.xml inventario-service/pom.xml
 COPY membresia-service/pom.xml membresia-service/pom.xml
+COPY usuario-service/pom.xml usuario-service/pom.xml
 COPY inventario-service/src inventario-service/src
 RUN mvn -B -pl inventario-service -am -DskipTests package
 FROM eclipse-temurin:21.0.8_9-jre-alpine-3.22

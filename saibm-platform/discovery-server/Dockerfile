@@ -7,6 +7,7 @@ COPY catalog-service/pom.xml catalog-service/pom.xml
 COPY libro-service/pom.xml libro-service/pom.xml
 COPY inventario-service/pom.xml inventario-service/pom.xml
 COPY membresia-service/pom.xml membresia-service/pom.xml
+COPY usuario-service/pom.xml usuario-service/pom.xml
 COPY discovery-server/src discovery-server/src
 RUN mvn -B -pl discovery-server -am -DskipTests package
 

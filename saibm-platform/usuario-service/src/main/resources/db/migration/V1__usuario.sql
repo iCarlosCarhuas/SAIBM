@@ -1,0 +1,3 @@
+create table user_profiles (id uuid primary key,first_name varchar(100) not null,last_name varchar(100) not null,dni varchar(20) not null unique,email varchar(255) not null unique,status varchar(30) not null check(status in ('ACTIVE','DEACTIVATED')),created_at timestamptz not null,updated_at timestamptz not null,legacy_user_id varchar(80) unique);
+create table user_outbox (event_id uuid primary key,event_type varchar(120) not null,event_version integer not null,occurred_at timestamptz not null,correlation_id varchar(120) not null,producer varchar(80) not null,payload_json text not null,published boolean not null default false);
+create index idx_user_outbox_pending on user_outbox(published,occurred_at);
