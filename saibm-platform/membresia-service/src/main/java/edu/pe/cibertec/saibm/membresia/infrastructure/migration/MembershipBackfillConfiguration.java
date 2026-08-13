@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.membresia.infrastructure.migration; import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty; import org.springframework.context.annotation.Configuration; @Configuration @ConditionalOnProperty(name="membresia.backfill.enabled",havingValue="true") public class MembershipBackfillConfiguration {}

@@ -1,0 +1,27 @@
+spring:
+  config:
+    activate:
+      on-profile: legacy
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: libro-books
+              uri: lb://libro-service
+              predicates:
+                - Path=/api/v1/books,/api/v1/books/**
+            - id: inventario-inventory
+              uri: lb://inventario-service
+              predicates:
+                - Path=/api/v1/inventory/**
+            - id: membresia-memberships
+              uri: lb://membresia-service
+              predicates:
+                - Path=/api/v1/memberships/**
+            - id: legacy
+              uri: ${SAIBM_LEGACY_BASE_URL}
+              predicates:
+                - Path=/legacy/**
+              filters:
+                - StripPrefix=1

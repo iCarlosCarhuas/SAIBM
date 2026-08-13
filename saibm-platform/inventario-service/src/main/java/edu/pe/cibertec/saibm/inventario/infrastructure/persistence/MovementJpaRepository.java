@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.inventario.infrastructure.persistence; import java.util.UUID; import org.springframework.data.jpa.repository.JpaRepository; public interface MovementJpaRepository extends JpaRepository<MovementJpaEntity,UUID>{}

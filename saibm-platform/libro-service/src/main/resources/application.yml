@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8085}
+spring:
+  application:
+    name: libro-service
+  datasource:
+    url: ${SAIBM_LIBRO_DB_URL:jdbc:postgresql://localhost:5432/${SAIBM_LIBRO_DB_NAME:saibm_libro}}
+    username: ${SAIBM_LIBRO_DB_USER:}
+    password: ${SAIBM_LIBRO_DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  mvc:
+    problemdetails:
+      enabled: true
+libro:
+  security:
+    transitional-secret: ${SAIBM_CATALOG_INTERNAL_ADMIN_SECRET:}
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

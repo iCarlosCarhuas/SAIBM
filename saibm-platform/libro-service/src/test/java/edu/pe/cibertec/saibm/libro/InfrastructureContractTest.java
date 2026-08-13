@@ -1,0 +1,3 @@
+package edu.pe.cibertec.saibm.libro;
+import static org.assertj.core.api.Assertions.assertThat; import java.nio.file.*; import org.junit.jupiter.api.Test;
+class InfrastructureContractTest { @Test void serviceHasOwnedPostgresFlywayHealthAndDockerBoundary() throws Exception {var y=Files.readString(Path.of("src/main/resources/application.yml"));var sql=Files.readString(Path.of("src/main/resources/db/migration/V1__libro.sql"));var d=Files.readString(Path.of("Dockerfile"));assertThat(y).contains("name: libro-service","ddl-auto: validate","flyway:","register-with-eureka: true","probes:");assertThat(sql).contains("create table books").doesNotContain("references");assertThat(d).contains("USER saibm","EXPOSE 8085");} }

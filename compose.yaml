@@ -1,0 +1,239 @@
+name: saibm-local
+
+x-postgres: &postgres
+  image: postgres:16.9-alpine3.22
+  restart: unless-stopped
+  networks: [data]
+  healthcheck:
+    test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+    interval: 5s
+    timeout: 3s
+    retries: 12
+
+services:
+  iam-db:
+    <<: *postgres
+    environment:
+      POSTGRES_DB: ${SAIBM_IAM_DB_NAME}
+      POSTGRES_USER: ${SAIBM_IAM_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_IAM_DB_PASSWORD}
+    volumes: [iam-data:/var/lib/postgresql/data]
+
+  catalog-db:
+    <<: *postgres
+    networks: [catalog-data]
+    environment:
+      POSTGRES_DB: ${SAIBM_CATALOG_DB_NAME}
+      POSTGRES_USER: ${SAIBM_CATALOG_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_CATALOG_DB_PASSWORD}
+    volumes: [catalog-data:/var/lib/postgresql/data]
+
+  libro-db:
+    <<: *postgres
+    networks: [libro-data]
+    environment:
+      POSTGRES_DB: ${SAIBM_LIBRO_DB_NAME}
+      POSTGRES_USER: ${SAIBM_LIBRO_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_LIBRO_DB_PASSWORD}
+    volumes: [libro-data:/var/lib/postgresql/data]
+
+  inventario-db:
+    <<: *postgres
+    networks: [inventario-data]
+    environment:
+      POSTGRES_DB: ${SAIBM_INVENTARIO_DB_NAME}
+      POSTGRES_USER: ${SAIBM_INVENTARIO_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_INVENTARIO_DB_PASSWORD}
+    volumes: [inventario-data:/var/lib/postgresql/data]
+
+  membresia-db:
+    <<: *postgres
+    networks: [membresia-data]
+    environment:
+      POSTGRES_DB: ${SAIBM_MEMBRESIA_DB_NAME}
+      POSTGRES_USER: ${SAIBM_MEMBRESIA_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_MEMBRESIA_DB_PASSWORD}
+    volumes: [membresia-data:/var/lib/postgresql/data]
+
+  libro-service:
+    build:
+      context: saibm-platform
+      dockerfile: libro-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SAIBM_LIBRO_DB_URL: jdbc:postgresql://libro-db:5432/${SAIBM_LIBRO_DB_NAME}
+      SAIBM_LIBRO_DB_USER: ${SAIBM_LIBRO_DB_USER}
+      SAIBM_LIBRO_DB_PASSWORD: ${SAIBM_LIBRO_DB_PASSWORD}
+      SAIBM_CATALOG_INTERNAL_ADMIN_SECRET: ${SAIBM_CATALOG_INTERNAL_ADMIN_SECRET:-}
+    depends_on: {libro-db: {condition: service_healthy}, "discovery-server": {condition: service_healthy}}
+    networks: [services, libro-data]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:8085/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  inventario-service:
+    build:
+      context: saibm-platform
+      dockerfile: inventario-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SAIBM_INVENTARIO_DB_URL: jdbc:postgresql://inventario-db:5432/${SAIBM_INVENTARIO_DB_NAME}
+      SAIBM_INVENTARIO_DB_USER: ${SAIBM_INVENTARIO_DB_USER}
+      SAIBM_INVENTARIO_DB_PASSWORD: ${SAIBM_INVENTARIO_DB_PASSWORD}
+      SAIBM_INVENTARIO_INTERNAL_ADMIN_SECRET: ${SAIBM_INVENTARIO_INTERNAL_ADMIN_SECRET:-}
+      SAIBM_RABBITMQ_HOST: rabbitmq
+      SAIBM_RABBITMQ_PORT: 5672
+      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER}
+      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD}
+      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST}
+    depends_on:
+      inventario-db: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      discovery-server: {condition: service_healthy}
+    networks: [services, inventario-data]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:8086/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  membresia-service:
+    build:
+      context: saibm-platform
+      dockerfile: membresia-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SAIBM_MEMBRESIA_DB_URL: jdbc:postgresql://membresia-db:5432/${SAIBM_MEMBRESIA_DB_NAME}
+      SAIBM_MEMBRESIA_DB_USER: ${SAIBM_MEMBRESIA_DB_USER}
+      SAIBM_MEMBRESIA_DB_PASSWORD: ${SAIBM_MEMBRESIA_DB_PASSWORD}
+      SAIBM_MEMBRESIA_INTERNAL_ADMIN_SECRET: ${SAIBM_MEMBRESIA_INTERNAL_ADMIN_SECRET:-}
+      SAIBM_RABBITMQ_HOST: rabbitmq
+      SAIBM_RABBITMQ_PORT: 5672
+      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER}
+      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD}
+      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST}
+    depends_on:
+      membresia-db: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      discovery-server: {condition: service_healthy}
+    networks: [services, membresia-data]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:8087/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  catalog-service:
+    build:
+      context: saibm-platform
+      dockerfile: catalog-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SAIBM_CATALOG_DB_URL: jdbc:postgresql://catalog-db:5432/${SAIBM_CATALOG_DB_NAME}
+      SAIBM_CATALOG_DB_USER: ${SAIBM_CATALOG_DB_USER}
+      SAIBM_CATALOG_DB_PASSWORD: ${SAIBM_CATALOG_DB_PASSWORD}
+      SAIBM_CATALOG_INTERNAL_ADMIN_SECRET: ${SAIBM_CATALOG_INTERNAL_ADMIN_SECRET:-}
+    depends_on: {catalog-db: {condition: service_healthy}, "discovery-server": {condition: service_healthy}}
+    networks: [services, catalog-data]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:8082/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  circulation-db:
+    <<: *postgres
+    environment:
+      POSTGRES_DB: ${SAIBM_CIRCULATION_DB_NAME}
+      POSTGRES_USER: ${SAIBM_CIRCULATION_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_CIRCULATION_DB_PASSWORD}
+    volumes: [circulation-data:/var/lib/postgresql/data]
+
+  reporting-db:
+    <<: *postgres
+    environment:
+      POSTGRES_DB: ${SAIBM_REPORTING_DB_NAME}
+      POSTGRES_USER: ${SAIBM_REPORTING_DB_USER}
+      POSTGRES_PASSWORD: ${SAIBM_REPORTING_DB_PASSWORD}
+    volumes: [reporting-data:/var/lib/postgresql/data]
+
+  rabbitmq:
+    image: rabbitmq:4.1.3-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${SAIBM_RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${SAIBM_RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${SAIBM_RABBITMQ_VHOST}
+    ports: ["127.0.0.1:15672:15672"]
+    networks: [edge, services]
+    volumes: [rabbitmq-data:/var/lib/rabbitmq]
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  discovery-server:
+    build:
+      context: saibm-platform
+      dockerfile: discovery-server/Dockerfile
+    restart: unless-stopped
+    ports: ["127.0.0.1:8761:8761"]
+    networks: [edge, services]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:8761/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api-gateway:
+    build:
+      context: saibm-platform
+      dockerfile: api-gateway/Dockerfile
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: legacy
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SAIBM_LEGACY_BASE_URL: ${SAIBM_LEGACY_BASE_URL}
+      SAIBM_JWT_ISSUER: ${SAIBM_JWT_ISSUER}
+      SAIBM_JWT_AUDIENCE: ${SAIBM_JWT_AUDIENCE}
+      SAIBM_JWT_SECRET: ${SAIBM_JWT_SECRET}
+      SAIBM_CORS_ALLOWED_ORIGINS: ${SAIBM_CORS_ALLOWED_ORIGINS}
+    depends_on:
+      discovery-server: {condition: service_healthy}
+      libro-service: {condition: service_healthy}
+      inventario-service: {condition: service_healthy}
+      membresia-service: {condition: service_healthy}
+    ports: ["127.0.0.1:8080:8080"]
+    networks: [edge, services]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:8080/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+networks:
+  edge: {}
+  services: {internal: true}
+  data: {internal: true}
+  catalog-data: {internal: true}
+  libro-data: {internal: true}
+  inventario-data: {internal: true}
+  membresia-data: {internal: true}
+
+volumes:
+  iam-data: {}
+  catalog-data: {}
+  libro-data: {}
+  inventario-data: {}
+  membresia-data: {}
+  circulation-data: {}
+  reporting-data: {}
+  rabbitmq-data: {}

@@ -1,0 +1,3 @@
+package edu.pe.cibertec.saibm.membresia.infrastructure.config;
+import org.springframework.context.annotation.*; import org.springframework.scheduling.annotation.EnableScheduling; import edu.pe.cibertec.saibm.membresia.application.port.in.MembershipUseCase; import edu.pe.cibertec.saibm.membresia.application.port.out.MembershipStorePort; import edu.pe.cibertec.saibm.membresia.application.usecase.MembershipService;
+@Configuration @EnableScheduling public class MembershipConfig {@Bean MembershipService membershipService(MembershipStorePort store){return new MembershipService(store);}@Bean(name="membership") @Primary MembershipUseCase membership(MembershipService service){return new MembershipTransactionalFacade(service);}}

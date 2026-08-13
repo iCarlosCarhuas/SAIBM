@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.membresia.domain.event; public enum MembershipEventType {ASSIGNED("MembershipAssigned.v1"),CHANGED("MembershipChanged.v1"),EXPIRED("MembershipExpired.v1"),PLAN_UPDATED("PlanUpdated.v1");private final String wireName;MembershipEventType(String n){wireName=n;}public String wireName(){return wireName;}}

@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.inventario.domain.event; import java.time.Instant; import java.util.*; public record InventoryEvent(UUID eventId,String eventType,int eventVersion,Instant occurredAt,String correlationId,String causationId,String producer,Map<String,Object> payload){}

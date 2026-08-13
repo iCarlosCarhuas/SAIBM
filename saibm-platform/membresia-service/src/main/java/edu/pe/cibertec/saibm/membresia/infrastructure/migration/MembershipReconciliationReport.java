@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.membresia.infrastructure.migration; import java.util.*; public record MembershipReconciliationReport(boolean reconciled,int sourcePlans,int targetPlans,int sourceAssignments,int targetAssignments,List<String> mismatches){}

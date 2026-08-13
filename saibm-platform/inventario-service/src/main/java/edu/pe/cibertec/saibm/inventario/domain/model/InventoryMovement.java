@@ -1,0 +1,1 @@
+package edu.pe.cibertec.saibm.inventario.domain.model; import java.time.Instant; import java.util.UUID; public record InventoryMovement(UUID id,String bookId,int delta,String reason,String operationKey,Instant occurredAt){}

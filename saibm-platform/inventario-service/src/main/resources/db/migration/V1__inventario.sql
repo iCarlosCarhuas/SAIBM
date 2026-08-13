@@ -1,0 +1,7 @@
+create table inventory_stock (book_id varchar(200) primary key,total_stock integer not null check(total_stock >= 0),available_stock integer not null check(available_stock >= 0 and available_stock <= total_stock),updated_at timestamptz not null default now());
+create table inventory_holds (id uuid primary key,operation_key varchar(200) not null unique,book_id varchar(200) not null,quantity integer not null check(quantity > 0),expires_at timestamptz not null,request_hash varchar(64) not null,state varchar(16) not null check(state in ('HELD','COMMITTED','RELEASED','EXPIRED','REJECTED')),created_at timestamptz not null default now(),updated_at timestamptz not null default now());
+create index idx_inventory_holds_book_state on inventory_holds(book_id,state);
+create table inventory_movements (id uuid primary key,book_id varchar(200) not null,delta integer not null,reason varchar(40) not null,operation_key varchar(200) not null,occurred_at timestamptz not null);
+create table inventory_outbox (event_id uuid primary key,event_type varchar(120) not null,event_version integer not null,occurred_at timestamptz not null,correlation_id varchar(120) not null,causation_id varchar(120) not null,producer varchar(80) not null,payload_json text not null,published boolean not null default false);
+create index idx_inventory_outbox_pending on inventory_outbox(published,occurred_at);
+create table inventory_inbox (event_id uuid primary key,event_type varchar(120) not null,received_at timestamptz not null);

@@ -1,0 +1,3 @@
+package edu.pe.cibertec.saibm.membresia.application.port.out;
+import java.time.Instant; import java.util.*; import edu.pe.cibertec.saibm.membresia.domain.event.MembershipEvent; import edu.pe.cibertec.saibm.membresia.domain.model.*;
+public interface MembershipStorePort {Optional<Plan> plan(UUID id);List<Plan> activePlans(Instant at);Optional<MembershipAssignment> assignmentByKey(String key);Optional<MembershipAssignment> activeAssignment(String userId,Instant at);int insert(MembershipAssignment assignment);void save(Plan plan);void save(MembershipAssignment assignment);void history(MembershipHistory history);List<MembershipHistory> history(String userId);List<MembershipAssignment> expiring(Instant at);void outbox(MembershipEvent event);}
