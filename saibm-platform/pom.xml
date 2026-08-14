@@ -21,7 +21,6 @@
 	<modules>
 		<module>discovery-server</module>
 		<module>api-gateway</module>
-		<module>catalog-service</module>
 		<module>libro-service</module>
 		<module>inventario-service</module>
 		<module>membresia-service</module>

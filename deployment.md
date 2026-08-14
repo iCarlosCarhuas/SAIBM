@@ -10,7 +10,7 @@ Este runbook diseña el estado final de `planning.md`. Sólo los comandos del mo
 | `SVC-GATEWAY` | JAR/imagen Spring Cloud Gateway. | 8080 interno; 80/443 externo vía proxy. | Discovery, IAM y servicios. |
 | `SVC-DISCOVERY` | JAR/imagen Eureka Server. | 8761 sólo red administrativa/interna. | Ninguna. |
 | `SVC-IAM` | JAR/imagen Spring Boot. | 8081 interno. | `DB-IAM`, reCAPTCHA. |
-| `SVC-CATALOG` | JAR/imagen Spring Boot. | 8082 interno. | `DB-CATALOG`. |
+| `SVC-LIBRO` / `SVC-INVENT` | Imágenes Spring Boot separadas. | 8085/8086 internos. | `DB-LIBRO`, `DB-INVENT`. |
 | `SVC-CIRC` | JAR/imagen Spring Boot. | 8083 interno. | `DB-CIRC`, Catalog, RabbitMQ. |
 | `SVC-REPORT` | JAR/imagen Spring Boot/Jasper. | 8084 interno. | `DB-REPORT`, RabbitMQ. |
 | `MQ-01` | RabbitMQ 3 management. | 5672 interno; 15672 sólo administración. | Ninguna. |
@@ -40,7 +40,7 @@ Este runbook diseña el estado final de `planning.md`. Sólo los comandos del mo
 | `PORT-GATEWAY` | 8080 | Adoptado de referencia; único backend público. |
 | `PORT-DISCOVERY` | 8761 | Adoptado, pero interno. |
 | `PORT-IAM` | 8081 | Reservado. |
-| `PORT-CATALOG` | 8082 | Reservado. |
+| `PORT-LIBRO` / `PORT-INVENT` | 8085/8086 | Servicios propietarios; el slot catálogo 8082 está retirado. |
 | `PORT-CIRC` | 8083 | Adaptación del slot finance. |
 | `PORT-REPORT` | 8084 | Reservado. |
 | `PORT-RABBIT` | 5672/15672 | Interno/admin. |
@@ -54,7 +54,7 @@ Este runbook diseña el estado final de `planning.md`. Sólo los comandos del mo
 | Todos | `SPRING_PROFILES_ACTIVE`, `SERVER_PORT`, `EUREKA_URL`, `LOG_LEVEL`, `OTEL_*`, versión. | Ninguno compartido por defecto. |
 | Gateway | `ALLOWED_ORIGINS`, rutas, issuer/audience, JWKS URL. | Clave/cookie de sesión sólo si BFF; nunca en Angular. |
 | IAM | `DB_URL`, `JWT_ISSUER`, `JWT_AUDIENCE`, TTL, reCAPTCHA endpoint/site key. | `DB_PASSWORD`, clave JWT privada/HMAC fuerte, refresh pepper, `RECAPTCHA_SECRET`. |
-| Catalog/Circ/Report | `DB_URL`, URLs lógicas, timeout/retry, Rabbit host/vhost. | `DB_PASSWORD`, Rabbit password; credenciales de servicio si aplica. |
+| Libro/Invent/Circ/Report | `DB_URL`, URLs lógicas, timeout/retry, Rabbit host/vhost. | `DB_PASSWORD`, Rabbit password; credenciales de servicio si aplica. |
 | Web | URL pública relativa del Gateway, flags públicos. | **Ninguno.** |
 
 No se copian defaults inseguros de Marketoditito ni valores actuales de SAIBM. Los secretos ya versionados se rotan en `DEP-00`; se entrega sólo `.env.example` sin valores sensibles y el runtime falla cerrado si falta un secreto.
@@ -73,7 +73,7 @@ No se copian defaults inseguros de Marketoditito ni valores actuales de SAIBM. L
 
 1. CI verifica backend con Maven Wrapper del reactor y frontend con la versión Node/pnpm fijada en `packageManager`/CI.
 2. Genera contratos OpenAPI, ejecuta unitarias, integración, contrato, seguridad y E2E.
-3. Empaqueta JARs de `SVC-DISCOVERY`, `SVC-GATEWAY`, `SVC-IAM`, `SVC-CATALOG`, `SVC-CIRC`, `SVC-REPORT`.
+3. Empaqueta JARs de `SVC-DISCOVERY`, `SVC-GATEWAY`, `SVC-IAM`, `SVC-LIBRO`, `SVC-INVENT`, `SVC-CIRC`, `SVC-REPORT`.
 4. Compila `SVC-WEB`, crea imágenes inmutables, SBOM, firmas y digests.
 5. Publica sólo si todas las verificaciones pasan. No se usa `-DskipTests` como prueba de release.
 
@@ -82,7 +82,7 @@ No se copian defaults inseguros de Marketoditito ni valores actuales de SAIBM. L
 1. Redes, volúmenes, PostgreSQL y RabbitMQ.
 2. Migraciones Flyway de cada propietario con backup/restore verificado.
 3. `SVC-DISCOVERY` hasta readiness.
-4. `SVC-IAM`, `SVC-CATALOG`, `SVC-CIRC`, `SVC-REPORT` hasta registro y readiness.
+4. `SVC-IAM`, `SVC-LIBRO`, `SVC-INVENT`, `SVC-CIRC`, `SVC-REPORT` hasta registro y readiness.
 5. `SVC-GATEWAY` hasta rutas saludables.
 6. `SVC-WEB`/proxy y smoke tests externos.
 
@@ -93,7 +93,7 @@ El orden mejora determinismo, pero cada proceso implementa backoff y no asume qu
 | ID | Base objetivo | Origen legacy | Propietario |
 | --- | --- | --- | --- |
 | `DB-IAM` | `saibm_iam` | `usuarios`, `rol`, `perfil`, `acceso`, asignación de `membresia`. | `SVC-IAM` |
-| `DB-CATALOG` | `saibm_catalog` | `libros`, stock. | `SVC-CATALOG` |
+| `DB-LIBRO` / `DB-INVENT` | `saibm_libro` / `saibm_inventario` | `libros` / stock. | `SVC-LIBRO` / `SVC-INVENT` |
 | `DB-CIRC` | `saibm_circulation` | `reserva`, definición de planes; carrito derivado de sesión si se persiste. | `SVC-CIRC` |
 | `DB-REPORT` | `saibm_reporting` | Proyección reconstruible de APIs/eventos; no copia autoritativa. | `SVC-REPORT` |
 

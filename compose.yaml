@@ -19,15 +19,6 @@ services:
       POSTGRES_PASSWORD: ${SAIBM_IAM_DB_PASSWORD}
     volumes: [iam-data:/var/lib/postgresql/data]
 
-  catalog-db:
-    <<: *postgres
-    networks: [catalog-data]
-    environment:
-      POSTGRES_DB: ${SAIBM_CATALOG_DB_NAME}
-      POSTGRES_USER: ${SAIBM_CATALOG_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_CATALOG_DB_PASSWORD}
-    volumes: [catalog-data:/var/lib/postgresql/data]
-
   libro-db:
     <<: *postgres
     networks: [libro-data]
@@ -74,7 +65,6 @@ services:
       SAIBM_LIBRO_DB_URL: jdbc:postgresql://libro-db:5432/${SAIBM_LIBRO_DB_NAME}
       SAIBM_LIBRO_DB_USER: ${SAIBM_LIBRO_DB_USER}
       SAIBM_LIBRO_DB_PASSWORD: ${SAIBM_LIBRO_DB_PASSWORD}
-      SAIBM_CATALOG_INTERNAL_ADMIN_SECRET: ${SAIBM_CATALOG_INTERNAL_ADMIN_SECRET:-}
     depends_on: {libro-db: {condition: service_healthy}, "discovery-server": {condition: service_healthy}}
     networks: [services, libro-data]
     healthcheck:
@@ -164,25 +154,6 @@ services:
       timeout: 3s
       retries: 20
 
-  catalog-service:
-    build:
-      context: saibm-platform
-      dockerfile: catalog-service/Dockerfile
-    restart: unless-stopped
-    environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      SAIBM_CATALOG_DB_URL: jdbc:postgresql://catalog-db:5432/${SAIBM_CATALOG_DB_NAME}
-      SAIBM_CATALOG_DB_USER: ${SAIBM_CATALOG_DB_USER}
-      SAIBM_CATALOG_DB_PASSWORD: ${SAIBM_CATALOG_DB_PASSWORD}
-      SAIBM_CATALOG_INTERNAL_ADMIN_SECRET: ${SAIBM_CATALOG_INTERNAL_ADMIN_SECRET:-}
-    depends_on: {catalog-db: {condition: service_healthy}, "discovery-server": {condition: service_healthy}}
-    networks: [services, catalog-data]
-    healthcheck:
-      test: [CMD, wget, -q, --spider, http://localhost:8082/actuator/health/readiness]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-
   circulation-db:
     <<: *postgres
     environment:
@@ -260,7 +231,6 @@ networks:
   edge: {}
   services: {internal: true}
   data: {internal: true}
-  catalog-data: {internal: true}
   libro-data: {internal: true}
   inventario-data: {internal: true}
   membresia-data: {internal: true}
@@ -268,7 +238,6 @@ networks:
 
 volumes:
   iam-data: {}
-  catalog-data: {}
   libro-data: {}
   inventario-data: {}
   membresia-data: {}

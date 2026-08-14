@@ -25,7 +25,7 @@ Legacy numeric IDs remain migration aliases, while the service uses opaque UUIDs
 Stock is excluded from this backfill and belongs to `inventario-service`, which owns
 the target schema, holds, movements, and idempotency. B02 does not execute the
 legacy stock/hold backfill: the source freeze, checksummed mapping, and reconciliation
-receipt remain an explicit gap before the catalog fallback can be deleted.
+receipt remain an explicit migration gap.
 
 The run is accepted only when source/target counts, every canonical descriptive
 field, and every migration alias reconcile 100%. Any mismatch is a hard cutover
@@ -34,10 +34,10 @@ explicit UUID/alias mapping must be rerunnable without duplicates.
 
 ## Cutover and rollback
 
-After reconciliation, Gateway smoke, and the combined libro+inventario parity gate,
-enable the target routes. Only then may `catalog-service` be removed from the reactor
-and Compose. Roll back by disabling target routes/consumers and restoring legacy
-routing while catalog volumes are retained for diagnosis. Do not reverse-sync
+The obsolete catalog runtime has been removed. Before production cutover, implement
+the backfill as an explicit temporary tool, reconcile it, and pass the combined
+libro+inventario parity gate. Roll back by disabling target routes/consumers and
+restoring legacy routing. Do not reverse-sync
 PostgreSQL into MySQL and do not enable dual-write. Circulation remains on its
 existing authority until a coordinated migration.
 

@@ -58,12 +58,13 @@ Se reutiliza la estructura `core/services`, `core/guards`, `core/interceptors`, 
 
 ```text
 Browser -> SVC-WEB -> SVC-GATEWAY -> SVC-IAM ----- DB-IAM
-                                  -> SVC-CATALOG - DB-CATALOG
+                                  -> SVC-LIBRO --- DB-LIBRO
+                                  -> SVC-INVENT --- DB-INVENT
                                   -> SVC-CIRC ---- DB-CIRC
                                   -> SVC-REPORT -- DB-REPORT
                          SVC-* <-> SVC-DISCOVERY
-SVC-CIRC -> inventory API -> SVC-CATALOG
-SVC-CIRC/SVC-CATALOG -> transactional outbox -> RabbitMQ -> SVC-REPORT
+SVC-CIRC -> inventory API -> SVC-INVENT
+SVC-CIRC/SVC-INVENT -> transactional outbox -> RabbitMQ -> SVC-REPORT
 ```
 
 ### Mapa completo de módulos target
@@ -73,7 +74,8 @@ SVC-CIRC/SVC-CATALOG -> transactional outbox -> RabbitMQ -> SVC-REPORT
 | `SVC-DISCOVERY` | `saibm-platform/discovery-server` | Eureka registry. | Ninguno. |
 | `SVC-GATEWAY` | `saibm-platform/api-gateway` | Entrada `/api/**`, TLS/proxy, rutas, CORS, rate limits, correlación y BFF de cookies si se confirma. | Sesión/refresh revocable sólo si opera como BFF. |
 | `SVC-IAM` | `saibm-platform/iam-service` | Login, refresh/logout, registro, reCAPTCHA, usuarios, credenciales, roles, perfiles, accesos y asignación de plan. | `users`, `credentials`, `roles`, `profiles`, `permissions`, `user_membership`. |
-| `SVC-CATALOG` | `saibm-platform/catalog-service` | Libros, búsqueda, metadatos, imagen, stock disponible, consumo/liberación idempotente. | `books`, `inventory`, `inventory_holds`, `outbox`. |
+| `SVC-LIBRO` | `saibm-platform/libro-service` | Libros, búsqueda, metadatos e imagen. | `books`. |
+| `SVC-INVENT` | `saibm-platform/inventario-service` | Stock, holds y consumo/liberación idempotente. | `inventory`, `inventory_holds`, `outbox`. |
 | `SVC-CIRC` | `saibm-platform/circulation-service` | Planes y límites, carrito persistente opcional, reservas, expiración, cancelación y coordinación de inventario. | `membership_plans`, `carts`, `cart_items`, `reservations`, `idempotency`, `outbox`. |
 | `SVC-REPORT` | `saibm-platform/reporting-service` | Proyecciones autorizadas, auditoría de eventos y PDF de catálogo/reservas. | `report_projection`, `audit_event`, `processed_event`. |
 | `SVC-WEB` | Repositorio `saibm-web` | Angular completo: login/registro/perfil, usuarios/roles/membresías, catálogo CRUD/búsqueda, carrito, mis reservas, administración de reservas, reportes y errores. | Ninguno transaccional. |
@@ -108,7 +110,7 @@ OpenAPI es obligatorio y versionado; DTOs no exponen entidades. Errores usan Pro
 | `WP-00` | 1-2 | Caracterizar todos los procesos `N-PROC-01..06`; inventariar rutas/datos; métricas; backup/restore; rotar secretos. | Pruebas de comportamiento, RPO/RTO y supuestos aprobados por PO. |
 | `WP-01` | 3 | Crear reactor/módulos, BOM compatible con Java 21/Spring Cloud, OpenAPI, Actuator, Flyway, errores/logs base. Depende `WP-00`. | Módulos empaquetables, límites y contratos en CI; sin lógica migrada aún. |
 | `WP-02` | 4 | Eureka, Gateway, perfiles Docker, Compose base y rutas al monolito/servicios. | Discovery y rutas saludables; rollback al monolito probado. |
-| `WP-03` | 5-6 | `SVC-CATALOG`, `DB-CATALOG`, API/inventario, backfill de `libros`. | Contratos, concurrencia stock, conciliación 100 %, único escritor y rollback ensayado. |
+| `WP-03` | 5-6 | `SVC-LIBRO`, `SVC-INVENT`, sus bases y backfill explícito de `libros`/stock. El runtime catálogo obsoleto fue retirado. | Contratos, concurrencia stock, conciliación 100 %, único escritor y rollback ensayado. |
 | `WP-04` | 7-9 | `SVC-CIRC`, planes, carrito, reservas, idempotencia, compensación; reemplazar procedimientos cruzados. Depende `WP-03`. | Invariantes de cupo/stock bajo concurrencia/fallas; `reserva` migrada y conciliada. |
 | `WP-05` | 10-11 | `SVC-IAM`, Spring Security/JWT, rehash, usuarios/roles/perfiles/asignaciones y reCAPTCHA. Depende contratos de Circ. | Matriz de permisos y ownership; migración sin bloqueo de cuentas; rotación/revocación probada. |
 | `WP-06` | 12-13 | `SVC-WEB` Angular con todas las pantallas/roles y paridad route-by-route. Depende APIs estables. | E2E responsive/accesible; ninguna capacidad depende de Thymeleaf. |

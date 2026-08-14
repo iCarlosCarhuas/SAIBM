@@ -1,6 +1,6 @@
 # Local migration runtime
 
-This runtime starts the implemented platform applications, the catalog fallback, libro, inventario, RabbitMQ, and migration infrastructure. Image packaging skips tests because the commands below and CI run tests first; an image build is not test evidence.
+This runtime starts the implemented platform applications, libro, inventario, RabbitMQ, and migration infrastructure. The obsolete catalog runtime has been retired. Image packaging skips tests because the commands below and CI run tests first; an image build is not test evidence.
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ From the repository root:
 .\mvnw.cmd test
 .\mvnw.cmd -f saibm-platform/pom.xml test
 docker compose --env-file env.properties config --quiet
-docker compose --env-file env.properties build discovery-server api-gateway catalog-service libro-service inventario-service
+docker compose --env-file env.properties build discovery-server api-gateway libro-service inventario-service membresia-service usuario-service
 docker compose --env-file env.properties up -d
 docker compose --env-file env.properties ps
 ```
@@ -39,7 +39,6 @@ Health endpoints:
 ```powershell
 Invoke-RestMethod http://localhost:8761/actuator/health/readiness
 Invoke-RestMethod http://localhost:8080/actuator/health/readiness
-Invoke-RestMethod http://localhost:8082/actuator/health/readiness
 Invoke-RestMethod http://localhost:8085/actuator/health/readiness
 Invoke-RestMethod http://localhost:8086/actuator/health/readiness
 docker compose --env-file env.properties exec rabbitmq rabbitmq-diagnostics -q ping
@@ -52,11 +51,11 @@ Gateway is available at `http://localhost:8080`, Discovery at `http://localhost:
 
 ```powershell
 docker compose --env-file env.properties ps
-docker compose --env-file env.properties logs --tail 100 discovery-server api-gateway catalog-service libro-service inventario-service
-docker compose --env-file env.properties logs --tail 100 rabbitmq iam-db catalog-db circulation-db reporting-db
+docker compose --env-file env.properties logs --tail 100 discovery-server api-gateway libro-service inventario-service membresia-service usuario-service
+docker compose --env-file env.properties logs --tail 100 rabbitmq iam-db circulation-db reporting-db
 docker compose --env-file env.properties down
 ```
 
 Use `down` without `-v` so local database volumes survive. If Docker rejects an old API version, clear any `DOCKER_API_VERSION` override and verify the daemon supports the client version. If Gateway is healthy but legacy requests fail, verify the monolith is listening on host port 8000.
 
-Rollback removes the catalog route/service/Dockerfile and keeps the legacy route authoritative; it does not remove volumes unless explicitly requested.
+Legacy book and stock backfill remains a documented migration gap; it is not a runtime service and must be implemented as an explicit, temporary tool before production cutover.
