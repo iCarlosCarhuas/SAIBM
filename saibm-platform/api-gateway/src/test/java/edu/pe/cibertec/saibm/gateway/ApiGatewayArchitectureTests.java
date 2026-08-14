@@ -26,11 +26,11 @@ class ApiGatewayArchitectureTests {
 	private ConfigurableApplicationContext defaultContext;
 
 	@Test
-	void defaultContextHasOnlyExplicitCatalogRoutes() {
+	void defaultContextExposesOnlyUnauthenticatedReadRoutes() {
 		assertThat(defaultContext).isInstanceOf(ReactiveWebApplicationContext.class);
 		List<RouteDefinition> definitions = routes.getRouteDefinitions().collectList().block(Duration.ofSeconds(5));
 		assertThat(definitions).isNotNull().extracting(RouteDefinition::getId)
-				.containsExactlyInAnyOrder("libro-books", "inventario-inventory", "membresia-memberships", "usuario-users");
+				.containsExactlyInAnyOrder("libro-books", "membresia-plans");
 	}
 
 	@Test
@@ -43,19 +43,21 @@ class ApiGatewayArchitectureTests {
 		assertThat(reactor).contains("<version>3.5.3</version>", "<spring-cloud.version>2025.0.3</spring-cloud.version>");
 		assertThat(pom).contains("spring-cloud-starter-gateway-server-webflux", "spring-cloud-starter-netflix-eureka-client",
 				"spring-cloud-starter-loadbalancer");
-			assertThat(defaults).contains("port: 8080", "enabled: false", "libro-books", "inventario-inventory", "membresia-memberships", "usuario-users",
-					"lb://libro-service", "lb://inventario-service", "lb://membresia-service", "lb://usuario-service", "/api/v1/books/**", "/api/v1/inventory/**", "/api/v1/memberships/**", "/api/v1/users/**", "register-with-eureka: true",
+		assertThat(defaults).contains("port: 8080", "enabled: false", "libro-books", "membresia-plans",
+					"lb://libro-service", "lb://membresia-service", "/api/v1/books/**", "/api/v1/memberships/plans", "Method=GET", "register-with-eureka: true",
 				"fetch-registry: true", "include: health,info", "probes:", "enabled: true")
-				.doesNotContain("SAIBM_LEGACY_BASE_URL", "Path=/**");
-			assertThat(legacy).contains("on-profile: legacy", "uri: ${SAIBM_LEGACY_BASE_URL", "Path=/legacy/**", "StripPrefix=1",
-					"libro-books", "inventario-inventory", "membresia-memberships", "usuario-users", "lb://libro-service", "lb://inventario-service", "lb://membresia-service", "lb://usuario-service").doesNotContain("localhost", "Path=/**", "lb://catalog-service");
+				.doesNotContain("SAIBM_LEGACY_BASE_URL", "Path=/**", "inventario-inventory", "usuario-users", "membresia-memberships");
+		assertThat(legacy).contains("on-profile: legacy", "uri: ${SAIBM_LEGACY_BASE_URL", "Path=/legacy/**", "StripPrefix=1",
+					"libro-books", "membresia-plans", "lb://libro-service", "lb://membresia-service", "Method=GET")
+				.doesNotContain("localhost", "Path=/**", "inventario-inventory", "usuario-users", "membresia-memberships");
 	}
 
 	@Test
 	void legacyProfileRemainsExplicitlyConfigured() throws IOException {
 		String legacy = read("saibm-platform/api-gateway/src/main/resources/application-legacy.yml");
 		assertThat(legacy).contains("on-profile: legacy", "uri: ${SAIBM_LEGACY_BASE_URL", "Path=/legacy/**",
-				"id: libro-books", "id: inventario-inventory", "id: membresia-memberships", "id: usuario-users", "lb://inventario-service", "lb://libro-service", "lb://membresia-service", "lb://usuario-service").doesNotContain("lb://catalog-service");
+				"id: libro-books", "id: membresia-plans", "lb://libro-service", "lb://membresia-service", "Method=GET")
+				.doesNotContain("inventario-inventory", "usuario-users", "membresia-memberships");
 	}
 
 	@Test

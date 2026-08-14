@@ -14,45 +14,45 @@ services:
   iam-db:
     <<: *postgres
     environment:
-      POSTGRES_DB: ${SAIBM_IAM_DB_NAME}
-      POSTGRES_USER: ${SAIBM_IAM_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_IAM_DB_PASSWORD}
+      POSTGRES_DB: ${SAIBM_IAM_DB_NAME:?required}
+      POSTGRES_USER: ${SAIBM_IAM_DB_USER:?required}
+      POSTGRES_PASSWORD: ${SAIBM_IAM_DB_PASSWORD:?required}
     volumes: [iam-data:/var/lib/postgresql/data]
 
   libro-db:
     <<: *postgres
     networks: [libro-data]
     environment:
-      POSTGRES_DB: ${SAIBM_LIBRO_DB_NAME}
-      POSTGRES_USER: ${SAIBM_LIBRO_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_LIBRO_DB_PASSWORD}
+      POSTGRES_DB: ${SAIBM_LIBRO_DB_NAME:?required}
+      POSTGRES_USER: ${SAIBM_LIBRO_DB_USER:?required}
+      POSTGRES_PASSWORD: ${SAIBM_LIBRO_DB_PASSWORD:?required}
     volumes: [libro-data:/var/lib/postgresql/data]
 
   inventario-db:
     <<: *postgres
     networks: [inventario-data]
     environment:
-      POSTGRES_DB: ${SAIBM_INVENTARIO_DB_NAME}
-      POSTGRES_USER: ${SAIBM_INVENTARIO_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_INVENTARIO_DB_PASSWORD}
+      POSTGRES_DB: ${SAIBM_INVENTARIO_DB_NAME:?required}
+      POSTGRES_USER: ${SAIBM_INVENTARIO_DB_USER:?required}
+      POSTGRES_PASSWORD: ${SAIBM_INVENTARIO_DB_PASSWORD:?required}
     volumes: [inventario-data:/var/lib/postgresql/data]
 
   membresia-db:
     <<: *postgres
     networks: [membresia-data]
     environment:
-      POSTGRES_DB: ${SAIBM_MEMBRESIA_DB_NAME}
-      POSTGRES_USER: ${SAIBM_MEMBRESIA_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_MEMBRESIA_DB_PASSWORD}
+      POSTGRES_DB: ${SAIBM_MEMBRESIA_DB_NAME:?required}
+      POSTGRES_USER: ${SAIBM_MEMBRESIA_DB_USER:?required}
+      POSTGRES_PASSWORD: ${SAIBM_MEMBRESIA_DB_PASSWORD:?required}
     volumes: [membresia-data:/var/lib/postgresql/data]
 
   usuario-db:
     <<: *postgres
     networks: [usuario-data]
     environment:
-      POSTGRES_DB: ${SAIBM_USUARIO_DB_NAME}
-      POSTGRES_USER: ${SAIBM_USUARIO_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_USUARIO_DB_PASSWORD}
+      POSTGRES_DB: ${SAIBM_USUARIO_DB_NAME:?required}
+      POSTGRES_USER: ${SAIBM_USUARIO_DB_USER:?required}
+      POSTGRES_PASSWORD: ${SAIBM_USUARIO_DB_PASSWORD:?required}
     volumes: [usuario-data:/var/lib/postgresql/data]
 
   libro-service:
@@ -62,9 +62,9 @@ services:
     restart: unless-stopped
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      SAIBM_LIBRO_DB_URL: jdbc:postgresql://libro-db:5432/${SAIBM_LIBRO_DB_NAME}
-      SAIBM_LIBRO_DB_USER: ${SAIBM_LIBRO_DB_USER}
-      SAIBM_LIBRO_DB_PASSWORD: ${SAIBM_LIBRO_DB_PASSWORD}
+      SAIBM_LIBRO_DB_URL: jdbc:postgresql://libro-db:5432/${SAIBM_LIBRO_DB_NAME:?required}
+      SAIBM_LIBRO_DB_USER: ${SAIBM_LIBRO_DB_USER:?required}
+      SAIBM_LIBRO_DB_PASSWORD: ${SAIBM_LIBRO_DB_PASSWORD:?required}
     depends_on: {libro-db: {condition: service_healthy}, "discovery-server": {condition: service_healthy}}
     networks: [services, libro-data]
     healthcheck:
@@ -80,15 +80,15 @@ services:
     restart: unless-stopped
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      SAIBM_INVENTARIO_DB_URL: jdbc:postgresql://inventario-db:5432/${SAIBM_INVENTARIO_DB_NAME}
-      SAIBM_INVENTARIO_DB_USER: ${SAIBM_INVENTARIO_DB_USER}
-      SAIBM_INVENTARIO_DB_PASSWORD: ${SAIBM_INVENTARIO_DB_PASSWORD}
-      SAIBM_INVENTARIO_INTERNAL_ADMIN_SECRET: ${SAIBM_INVENTARIO_INTERNAL_ADMIN_SECRET:-}
+      SAIBM_INVENTARIO_DB_URL: jdbc:postgresql://inventario-db:5432/${SAIBM_INVENTARIO_DB_NAME:?required}
+      SAIBM_INVENTARIO_DB_USER: ${SAIBM_INVENTARIO_DB_USER:?required}
+      SAIBM_INVENTARIO_DB_PASSWORD: ${SAIBM_INVENTARIO_DB_PASSWORD:?required}
+      SAIBM_INVENTARIO_INTERNAL_ADMIN_SECRET: ${SAIBM_INVENTARIO_INTERNAL_ADMIN_SECRET:?required}
       SAIBM_RABBITMQ_HOST: rabbitmq
       SAIBM_RABBITMQ_PORT: 5672
-      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER}
-      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD}
-      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST}
+      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER:?required}
+      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD:?required}
+      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST:?required}
     depends_on:
       inventario-db: {condition: service_healthy}
       rabbitmq: {condition: service_healthy}
@@ -107,15 +107,15 @@ services:
     restart: unless-stopped
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      SAIBM_MEMBRESIA_DB_URL: jdbc:postgresql://membresia-db:5432/${SAIBM_MEMBRESIA_DB_NAME}
-      SAIBM_MEMBRESIA_DB_USER: ${SAIBM_MEMBRESIA_DB_USER}
-      SAIBM_MEMBRESIA_DB_PASSWORD: ${SAIBM_MEMBRESIA_DB_PASSWORD}
-      SAIBM_MEMBRESIA_INTERNAL_ADMIN_SECRET: ${SAIBM_MEMBRESIA_INTERNAL_ADMIN_SECRET:-}
+      SAIBM_MEMBRESIA_DB_URL: jdbc:postgresql://membresia-db:5432/${SAIBM_MEMBRESIA_DB_NAME:?required}
+      SAIBM_MEMBRESIA_DB_USER: ${SAIBM_MEMBRESIA_DB_USER:?required}
+      SAIBM_MEMBRESIA_DB_PASSWORD: ${SAIBM_MEMBRESIA_DB_PASSWORD:?required}
+      SAIBM_MEMBRESIA_INTERNAL_ADMIN_SECRET: ${SAIBM_MEMBRESIA_INTERNAL_ADMIN_SECRET:?required}
       SAIBM_RABBITMQ_HOST: rabbitmq
       SAIBM_RABBITMQ_PORT: 5672
-      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER}
-      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD}
-      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST}
+      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER:?required}
+      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD:?required}
+      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST:?required}
     depends_on:
       membresia-db: {condition: service_healthy}
       rabbitmq: {condition: service_healthy}
@@ -134,15 +134,15 @@ services:
     restart: unless-stopped
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      SAIBM_USUARIO_DB_URL: jdbc:postgresql://usuario-db:5432/${SAIBM_USUARIO_DB_NAME}
-      SAIBM_USUARIO_DB_USER: ${SAIBM_USUARIO_DB_USER}
-      SAIBM_USUARIO_DB_PASSWORD: ${SAIBM_USUARIO_DB_PASSWORD}
-      SAIBM_USUARIO_INTERNAL_ADMIN_SECRET: ${SAIBM_USUARIO_INTERNAL_ADMIN_SECRET:-}
+      SAIBM_USUARIO_DB_URL: jdbc:postgresql://usuario-db:5432/${SAIBM_USUARIO_DB_NAME:?required}
+      SAIBM_USUARIO_DB_USER: ${SAIBM_USUARIO_DB_USER:?required}
+      SAIBM_USUARIO_DB_PASSWORD: ${SAIBM_USUARIO_DB_PASSWORD:?required}
+      SAIBM_USUARIO_INTERNAL_ADMIN_SECRET: ${SAIBM_USUARIO_INTERNAL_ADMIN_SECRET:?required}
       SAIBM_RABBITMQ_HOST: rabbitmq
       SAIBM_RABBITMQ_PORT: 5672
-      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER}
-      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD}
-      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST}
+      SAIBM_RABBITMQ_USER: ${SAIBM_RABBITMQ_USER:?required}
+      SAIBM_RABBITMQ_PASSWORD: ${SAIBM_RABBITMQ_PASSWORD:?required}
+      SAIBM_RABBITMQ_VHOST: ${SAIBM_RABBITMQ_VHOST:?required}
     depends_on:
       usuario-db: {condition: service_healthy}
       rabbitmq: {condition: service_healthy}
@@ -157,26 +157,26 @@ services:
   circulation-db:
     <<: *postgres
     environment:
-      POSTGRES_DB: ${SAIBM_CIRCULATION_DB_NAME}
-      POSTGRES_USER: ${SAIBM_CIRCULATION_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_CIRCULATION_DB_PASSWORD}
+      POSTGRES_DB: ${SAIBM_CIRCULATION_DB_NAME:?required}
+      POSTGRES_USER: ${SAIBM_CIRCULATION_DB_USER:?required}
+      POSTGRES_PASSWORD: ${SAIBM_CIRCULATION_DB_PASSWORD:?required}
     volumes: [circulation-data:/var/lib/postgresql/data]
 
   reporting-db:
     <<: *postgres
     environment:
-      POSTGRES_DB: ${SAIBM_REPORTING_DB_NAME}
-      POSTGRES_USER: ${SAIBM_REPORTING_DB_USER}
-      POSTGRES_PASSWORD: ${SAIBM_REPORTING_DB_PASSWORD}
+      POSTGRES_DB: ${SAIBM_REPORTING_DB_NAME:?required}
+      POSTGRES_USER: ${SAIBM_REPORTING_DB_USER:?required}
+      POSTGRES_PASSWORD: ${SAIBM_REPORTING_DB_PASSWORD:?required}
     volumes: [reporting-data:/var/lib/postgresql/data]
 
   rabbitmq:
     image: rabbitmq:4.1.3-management-alpine
     restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: ${SAIBM_RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${SAIBM_RABBITMQ_PASSWORD}
-      RABBITMQ_DEFAULT_VHOST: ${SAIBM_RABBITMQ_VHOST}
+      RABBITMQ_DEFAULT_USER: ${SAIBM_RABBITMQ_USER:?required}
+      RABBITMQ_DEFAULT_PASS: ${SAIBM_RABBITMQ_PASSWORD:?required}
+      RABBITMQ_DEFAULT_VHOST: ${SAIBM_RABBITMQ_VHOST:?required}
     ports: ["127.0.0.1:15672:15672"]
     networks: [edge, services]
     volumes: [rabbitmq-data:/var/lib/rabbitmq]
@@ -207,11 +207,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: legacy
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      SAIBM_LEGACY_BASE_URL: ${SAIBM_LEGACY_BASE_URL}
-      SAIBM_JWT_ISSUER: ${SAIBM_JWT_ISSUER}
-      SAIBM_JWT_AUDIENCE: ${SAIBM_JWT_AUDIENCE}
-      SAIBM_JWT_SECRET: ${SAIBM_JWT_SECRET}
-      SAIBM_CORS_ALLOWED_ORIGINS: ${SAIBM_CORS_ALLOWED_ORIGINS}
+      SAIBM_LEGACY_BASE_URL: ${SAIBM_LEGACY_BASE_URL:?required}
     depends_on:
       discovery-server: {condition: service_healthy}
       libro-service: {condition: service_healthy}

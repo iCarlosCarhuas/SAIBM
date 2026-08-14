@@ -20,7 +20,7 @@ class LocalRuntimeContractTests {
 		for (String service : new String[] { "iam-db", "libro-db", "inventario-db", "membresia-db", "usuario-db", "circulation-db", "reporting-db" }) {
 			String block = serviceBlock(compose, service);
 			assertThat(block).contains("POSTGRES_DB: ${SAIBM_", "POSTGRES_USER: ${SAIBM_",
-					"POSTGRES_PASSWORD: ${SAIBM_").doesNotContain("ports:");
+					"POSTGRES_PASSWORD: ${SAIBM_", ":?required}").doesNotContain("ports:");
 		}
 		assertThat(compose).contains("pg_isready", "rabbitmq-diagnostics", "service_healthy",
 				"services: {internal: true}", "data: {internal: true}");
@@ -34,7 +34,7 @@ class LocalRuntimeContractTests {
 		String compose = Files.readString(ROOT.resolve("compose.yaml"));
 		String ignore = Files.readString(ROOT.resolve(".gitignore"));
 		assertThat(serviceBlock(compose, "api-gateway"))
-				.contains("SAIBM_LEGACY_BASE_URL: ${SAIBM_LEGACY_BASE_URL}", "SAIBM_JWT_SECRET: ${SAIBM_JWT_SECRET}",
+				.contains("SAIBM_LEGACY_BASE_URL: ${SAIBM_LEGACY_BASE_URL:?required}",
 						"127.0.0.1:8080:8080", "edge, services", "healthcheck:");
 		assertThat(serviceBlock(compose, "discovery-server"))
 				.contains("127.0.0.1:8761:8761", "healthcheck:");

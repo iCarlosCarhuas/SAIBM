@@ -11,18 +11,12 @@ spring:
               uri: lb://libro-service
               predicates:
                 - Path=/api/v1/books,/api/v1/books/**
-            - id: inventario-inventory
-              uri: lb://inventario-service
-              predicates:
-                - Path=/api/v1/inventory/**
-            - id: membresia-memberships
+                - Method=GET
+            - id: membresia-plans
               uri: lb://membresia-service
               predicates:
-                - Path=/api/v1/memberships/**
-            - id: usuario-users
-              uri: lb://usuario-service
-              predicates:
-                - Path=/api/v1/users/**
+                - Path=/api/v1/memberships/plans,/api/v1/memberships/plans/*
+                - Method=GET
             - id: legacy
               uri: ${SAIBM_LEGACY_BASE_URL}
               predicates:
