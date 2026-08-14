@@ -31,5 +31,9 @@ class InfrastructureContractTest {
         assertThat(Files.readString(root.resolve("java/edu/pe/cibertec/saibm/usuario/domain/event/UserEventType.java")))
                 .contains("UserProfileCreated.v1", "UserProfileChanged.v1", "UserDeactivated.v1");
         assertThat(Files.readString(Path.of("Dockerfile"))).contains("EXPOSE 8088", "USER saibm");
+        var publisher = Files.readString(root.resolve(
+                "java/edu/pe/cibertec/saibm/usuario/infrastructure/messaging/UserOutboxPublisher.java"));
+        assertThat(publisher).contains("publisher-enabled", "havingValue = \"true\"")
+                .doesNotContain(".published()", "outbox.save(");
     }
 }

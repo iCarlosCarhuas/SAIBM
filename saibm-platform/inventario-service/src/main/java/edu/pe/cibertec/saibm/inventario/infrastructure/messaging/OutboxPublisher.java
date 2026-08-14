@@ -1,1 +1,28 @@
-package edu.pe.cibertec.saibm.inventario.infrastructure.messaging; import org.springframework.amqp.rabbit.core.RabbitTemplate; import org.springframework.scheduling.annotation.Scheduled; import org.springframework.stereotype.Component; import org.springframework.transaction.annotation.Transactional; import edu.pe.cibertec.saibm.inventario.infrastructure.persistence.*; @Component public class OutboxPublisher {private final OutboxJpaRepository outbox;private final RabbitTemplate rabbit;public OutboxPublisher(OutboxJpaRepository o,RabbitTemplate r){outbox=o;rabbit=r;}@Scheduled(fixedDelayString="${inventario.outbox.delay-ms:500}")@Transactional public void publish(){for(var e:outbox.pending(org.springframework.data.domain.PageRequest.of(0,50))){rabbit.convertAndSend(RabbitConfig.EXCHANGE,e.getEventType(),e.getPayloadJson());e.markPublished();outbox.save(e);}}}
+package edu.pe.cibertec.saibm.inventario.infrastructure.messaging;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import edu.pe.cibertec.saibm.inventario.infrastructure.persistence.OutboxJpaRepository;
+
+@Component
+@ConditionalOnProperty(name = "inventario.outbox.publisher-enabled", havingValue = "true")
+public class OutboxPublisher {
+    private final OutboxJpaRepository outbox;
+    private final RabbitTemplate rabbit;
+
+    public OutboxPublisher(OutboxJpaRepository outbox, RabbitTemplate rabbit) {
+        this.outbox = outbox;
+        this.rabbit = rabbit;
+    }
+
+    @Scheduled(fixedDelayString = "${inventario.outbox.delay-ms:500}")
+    public void publish() {
+        for (var event : outbox.pending(PageRequest.of(0, 50))) {
+            rabbit.convertAndSend(RabbitConfig.EXCHANGE, event.getEventType(), event.getPayloadJson());
+        }
+    }
+}

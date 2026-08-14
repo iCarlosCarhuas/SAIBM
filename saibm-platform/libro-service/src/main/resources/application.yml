@@ -19,7 +19,7 @@ spring:
       enabled: true
 libro:
   security:
-    transitional-secret: ${SAIBM_CATALOG_INTERNAL_ADMIN_SECRET:}
+    transitional-secret: ${SAIBM_LIBRO_INTERNAL_ADMIN_SECRET:}
 eureka:
   client:
     register-with-eureka: true
